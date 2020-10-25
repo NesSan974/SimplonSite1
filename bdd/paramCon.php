@@ -1,11 +1,11 @@
 <?php
 // information sur les paramètres de connexion a la base de données
 
-$user="id15188582_admin";
+$user="root";
 
-$pass="wBpYo16CR06t()^P";
+$pass="";
 
-$dbname="id15188582_mediatechapp";
+$dbname="mediatech";
 
 $lehost="localhost";
 

@@ -13,8 +13,8 @@ function connexionBDD(){
         //echo "bdd oui";
         
     } catch (PDOException $e) {
-        //echo 'Échec lors de la connexion : ' . $e->getMessage();
-        //echo "bdd non";        
+        echo 'Échec lors de la connexion : ' . $e->getMessage();
+        echo "bdd non";        
         die();
     }
 
