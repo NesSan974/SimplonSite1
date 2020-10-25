@@ -66,7 +66,43 @@ if ( !isset( $_SESSION['c'] ) ){
        echo '" name="show_date"> '; ?>
     </form>
 
-    <p id="d"><?php echo $date; ?> </p>
+    <p id="d" hidden><?php echo $date; ?> </p>
+
+    <button class="btn btn-secondary" value="" type="button" title="left"><</button>
+    <button class="btn btn-secondary" value="" type="button" title="right">></button>
+
+
+    <button class="btn btn-success" value="" type="button" data-toggle="modal" data-target="#newOrd" title="Add">+</button> Add PC
+
+    <div class="modal fade" tabindex="-1" id="newOrd" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ajout</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+
+                  <form action="dashboard.php" method="get">
+                    
+                    <div class="modal-body">
+
+                        <input name="newOrd" type="text" placeholder="nom PC">
+
+                          
+                    </div>
+                    <div class="modal-footer">
+                      <input type="submit" class="btn btn-success" value="Ajouter">
+                    </div>
+                  
+                  </form>
+                
+                </div>
+              </div>
+            </div>
+
+
 
     <script type="text/javascript">
 
@@ -106,7 +142,33 @@ foreach ($res as $ligne) {
     echo '<div class="col-4">';
     echo '<ul class="list-group">';
 
-      echo '<li class="list-group-item d-flex  justify-content-between align-items-center active">'. $ligne['nom'] .'<button class="btn btn-danger" type="button" title="Delete"></button> </li>';
+      echo '<li class="list-group-item d-flex justify-content-between align-items-center active">'. $ligne['nom'] .'<button class="btn btn-danger" type="button" title="Delete" data-toggle="modal" data-target="#delOrd_'. $ligne['nom'] .'" ></button> </li>';
+
+        echo '
+            <div class="modal fade" id="delOrd_'. $ligne['nom'] .'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Suppression</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    Etes-vous sûr ?
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-success" ';
+                    
+                    echo 'onclick="document.location.href = \'dashboard.php?delOrd='. $ligne['nom'] .'\'" >Oui</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Non</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ';
+
+
       
       for ($i=8; $i < 20; $i++) { 
         echo '<li class="list-group-item d-flex justify-content-between align-items-center">';
@@ -115,10 +177,10 @@ foreach ($res as $ligne) {
 
           if ( listerAttribuerDateOrd($con, $d, $ligne['nom'], $i) ){
             print(listerAttribuerDateOrd($con, $d, $ligne['nom'], $i)[3]);
-            echo '<button class="btn btn-danger" type="button" title="Delete" data-toggle="modal" data-target="#delAttModal_' . $i .          '"></button>';
+            echo '<button class="btn btn-danger" type="button" title="Delete" data-toggle="modal" data-target="#delAttModal_'. $ligne['nom'] . '-' . $i . '"></button>';
 
             echo '
-            <div class="modal fade" id="delAttModal_'.$i.'" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="delAttModal_'. $ligne['nom'] . '-' . $i . '" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -173,6 +235,47 @@ foreach ($res as $ligne) {
                       <div class="autocomplete">
                         <input id="prenomAdd_' . $ligne['nom'] . '-' . $i . '" name="prenomAdd" type="text" placeholder="prenom">
                       </div>
+
+                      <button class="btn btn-success" value="" type="button" title="Add" data-toggle="modal" data-target="#newUser_' . $ligne['nom'] . '-' . $i . '">+</button>
+
+
+
+            <div class="modal fade" tabindex="-1" id="newUser_' . $ligne['nom'] . '-' . $i . '" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Nouvel Utilisateur</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                    
+                    <div class="modal-body">
+
+                        <input name="newPrenom" type="text" placeholder="prenom">
+                        <input name="newNom" type="text" placeholder="nom">
+                          
+                    </div>
+                    <div class="modal-footer">
+                      <input type="submit" class="btn btn-success" value="Ajouter">
+                    </div>
+                
+                </div>
+              </div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
                           
                     </div>
                     <div class="modal-footer">
@@ -192,9 +295,6 @@ foreach ($res as $ligne) {
 
           }
 
-
-
-          
 
         echo ' </li>';
       }
@@ -248,27 +348,69 @@ echo '</div>';
 
 <?php
 
+//add ord
+
+    if (isset($_GET['newOrd'])){
+        addOrdinateur($con, $_GET['newOrd']);
+        echo '<script>document.location.href = \'dashboard.php?date=' . $d . '  \' </script> ';
+
+    }
+
+    //suppr ord
+
+    if (isset($_GET['delOrd'])){
+        supprOrdinateur($con, $_GET['delOrd']);
+        echo '<script>document.location.href = \'dashboard.php?date=' . $d . '  \' </script> ';
+    }
+
+
     //suupr attribution
 
   if ( isset ( $_GET['date'] ) && isset( $_GET['h'] ) && isset( $_GET['delAtt'] ) && isset ( $_GET['ord'] ) ) {
-    supprAttr( $con, $d, $_GET['h'] );
+
+    $res = listerIdOrdByNom($con,$_GET['ord']);
+
+    foreach ($res as $ligne) {
+      $idOrd = $ligne['idOrd'];
+    }
+
+
+    supprAttr( $con, $d, $_GET['h'], $idOrd );
     echo '<script>document.location.href = \'dashboard.php?date=' . $d . '  \' </script> ';
 
   } 
 
+
+  //add user
+
+  if (isset($_GET['newPrenom']) && isset($_GET['newNom'])) {
+    addClient($con, $_GET['newPrenom'],$_GET['newNom']);
+    echo '<script>document.location.href = \'dashboard.php?date=' . $d . '&h='. $_GET['h'] .'&prenomAdd='. $_GET['newPrenom'] .'&ord='. $_GET['ord'] .'  \' </script> ';
+  }
+
+
+
     //add attr
   if ( isset ( $_GET['date'] ) && isset( $_GET['h'] ) && isset( $_GET['prenomAdd'] ) && isset ( $_GET['ord'] ) ) {
-    //echo '<script>document.location.href = \'dashboard.php?date=' . $d . '  \' </script> ';
-/*
-    $res = listerIdClientByPrenom($con,$_GET['prenomAdd']);
-    $idPrenom = $res[0][0];
+    
+
+    $res = ( isset($_GET['prenomAdd']) ) ? listerIdClientByPrenom($con,$_GET['prenomAdd']) : listerIdClientByPrenom($con,$_GET['newPrenom']) ;
+
+    foreach ($res as $ligne) {
+      $idClient = $ligne['idClient'];
+    }
+    echo 'idclient : ' . $idclient;
+
 
     $res = listerIdOrdByNom($con,$_GET['ord']);
-    $idOrd = $res[0][0];
+
+    foreach ($res as $ligne) {
+      $idOrd = $ligne['idOrd'];
+    }
+
+    addAttr( $con, $d, $_GET['h'], $idClient, $idOrd );
 
     echo '<script>document.location.href = \'dashboard.php?date=' . $d . '  \' </script> ';
-*/
-    //addAttr( $con, $d, $_GET['h'], $idPrenom, $idOrd ) );
 }
 
 

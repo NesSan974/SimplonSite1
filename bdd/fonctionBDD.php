@@ -41,25 +41,32 @@ function listerAttribuerDateOrd($connex, $date, $ord, $hdeb){
 
 
 
-function supprAttr($connex, $date, $heure){
-	$sql="DELETE FROM ATTRIBUER where date=? AND hdeb=?;";
+function supprAttr($connex, $date, $heure, $idreford){
+	$sql="DELETE FROM ATTRIBUER where date=? AND hdeb=? AND idreford=?;";
 	$res=$connex->prepare($sql);
-	$res->execute(array($date, $heure));
+	$res->execute(array($date, $heure, $idreford));
 }
 
 
 function addAttr($connex, $date, $heure, $idPrenom, $idOrd){
-	$sql="INSERT INTO ATTRIBUER";
+	$sql="INSERT INTO ATTRIBUER (idrefclient, idreford, date, hdeb) VALUES (?,?,?,?);";
 	$res=$connex->prepare($sql);
-	$res->execute(array($date, $heure));
+	$res->execute( array($idPrenom, $idOrd, $date, $heure) );
+
 }
 
 
+function addOrdinateur($connex, $nom){
+	$sql="INSERT INTO ORDINATEUR (nom) VALUES (?)";
+	$res=$connex->prepare($sql);
+	$res->execute(array($nom));
+}
 
-
-
-
-
+function addClient($connex, $prenom, $nom){
+	$sql="INSERT INTO CLIENT (prenom, nom) VALUES (?,?)";
+	$res=$connex->prepare($sql);
+	$res->execute(array($prenom, $nom));
+}
 
 
 
@@ -77,6 +84,14 @@ function listerIdOrdByNom($connex, $nom){
     $res->execute(array($nom));
     return $res;
 }
+
+
+function supprOrdinateur($connex, $nom){
+	$sql="DELETE FROM ORDINATEUR where nom=?;";
+	$res=$connex->prepare($sql);
+	$res->execute(array($nom));
+}
+
 
 
 ?>
